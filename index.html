@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arabic Test | Tier Test - لوحة بيانات اللاعبين</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #ffb300;
+            --primary-dark: #e6a100;
+            --background: #0b0d12;
+            --card-bg: #151a24;
+            --card-border: #262c3a;
+            --header-bg: #0f131a;
+            --text-light: #e0e0e0;
+            --text-dim: #aaa;
+            --success: #4CAF50;
+            --danger: #f44336;
+            --warning: #ff9800;
+            --info: #2196F3;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--background);
+            color: #fff;
+            line-height: 1.6;
+            background-image: 
+                radial-gradient(circle at 20% 80%, rgba(255, 179, 0, 0.03) 0%, transparent 20%),
+                radial-gradient(circle at 80% 20%, rgba(255, 179, 0, 0.03) 0%, transparent 20%);
+            min-height: 100vh;
+        }
+
+        header {
+            padding: 20px;
+            text-align: center;
+            background: linear-gradient(135deg, var(--header-bg) 0%, #1a1f2e 100%);
+            border-bottom: 2px solid var(--primary);
+            position: relative;
+            overflow: hidden;
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), #ff7043, var(--primary));
+            animation: shimmer 3s infinite linear;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        header h1 {
+            margin: 0;
+            color: var(--primary);
+            font-size: 2.2rem;
+            text-shadow: 0 2px 10px rgba(255, 179, 0, 0.3);
+            position: relative;
+            z-index: 1;
+        }
+
+        .subtitle {
+            color: var(--text-dim);
+            margin-top: 5px;
+            font-size: 1rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .stats-bar {
+            display: flex;
+            justify-content: space-between;
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 15px 20px;
+            margin-bottom: 20px;
+            border: 1px solid var(--card-border);
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 100px;
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: var(--text-dim);
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 10px;
+            border: 1px solid var(--card-border);
+        }
+
+        .tabs button {
+            background: transparent;
+            border: 1px solid var(--card-border);
+            color: var(--text-light);
+            padding: 10px 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tabs button:hover {
+            background: rgba(255, 179, 0, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .tabs button.active {
+            background: var(--primary);
+            color: #000;
+            border-color: var(--primary);
+            box-shadow: 0 4px 12px rgba(255, 179, 0, 0.3);
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 300px;
+            position: relative;
+        }
+
+        .search-box i {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-dim);
+        }
+
+        .search {
+            width: 100%;
+            padding: 14px 45px 14px 20px;
+            border-radius: 12px;
+            border: 1px solid var(--card-border);
+            background: var(--card-bg);
+            color: #fff;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        .search:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(255, 179, 0, 0.2);
+        }
+
+        .filter-btn {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            color: #fff;
+            padding: 14px 20px;
+            border-radius: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+
+        .filter-btn:hover {
+            background: rgba(255, 179, 0, 0.1);
+        }
+
+        #players {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .player {
+            background: linear-gradient(145deg, #1a1f2e, #151a24);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 20px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .player:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            border-color: var(--primary);
+        }
+
+        .player-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .rank {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.4rem;
+            flex-shrink: 0;
+        }
+
+        .avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            overflow: hidden;
+            background: #333;
+            border: 3px solid var(--card-border);
+            flex-shrink: 0;
+        }
+
+        .avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .info {
+            flex: 1;
+        }
+
+        .name {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: var(--text-light);
+            margin-bottom: 5px;
+        }
+
+        .role {
+            font-size: 0.9rem;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .player-meta {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .meta-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .meta-value {
+            font-weight: bold;
+            font-size: 1.1rem;
+            color: var(--text-light);
+        }
+
+        .meta-label {
+            font-size: 0.75rem;
+            color: var(--text-dim);
+        }
+
+        .ip-display {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            padding: 10px;
+            margin-top: 15px;
+            border: 1px dashed var(--card-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .ip-label {
+            font-size: 0.85rem;
+            color: var(--text-dim);
+        }
+
+        .ip-address {
+            font-family: monospace;
+            font-size: 1rem;
+            color: var(--primary);
+            direction: ltr;
+        }
+
+        .copy-ip {
+            background: transparent;
+            border: 1px solid var(--card-border);
+            color: var(--text-light);
+            padding: 5px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.2s;
+        }
+
+        .copy-ip:hover {
+            background: var(--primary);
+            color: #000;
+        }
+
+        .tiers-section {
+            margin-top: 15px;
+        }
+
+        .tiers-title {
+            font-size: 0.9rem;
+            color: var(--text-dim);
+            margin-bottom: 10px;
+        }
+
+        .tiers {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .tier-wrap {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 50px;
+        }
+
+        .tier {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: var(--warning);
+            opacity: 0.3;
+            margin-bottom: 5px;
+            position: relative;
+        }
+
+        .tier.active {
+            opacity: 1;
+            box-shadow: 0 0 10px rgba(255, 152, 0, 0.7);
+        }
+
+        .tier-label {
+            font-size: 0.7rem;
+            color: var(--text-dim);
+            text-align: center;
+        }
+
+        .points {
+            background: linear-gradient(135deg, #1a2030, #252d42);
+            padding: 8px 15px;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin-top: 15px;
+            text-align: center;
+            border: 1px solid rgba(255, 179, 0, 0.2);
+        }
+
+        .player-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .mode-badge {
+            background: rgba(255, 179, 0, 0.1);
+            color: var(--primary);
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+        }
+
+        .online-status {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.8rem;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--success);
+        }
+
+        .status-dot.offline {
+            background: var(--danger);
+        }
+
+        footer {
+            text-align: center;
+            padding: 25px;
+            background: var(--header-bg);
+            color: var(--text-dim);
+            margin-top: 40px;
+            border-top: 1px solid var(--card-border);
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+
+        .footer-links a {
+            color: var(--text-dim);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer-links a:hover {
+            color: var(--primary);
+        }
+
+        .no-results {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 50px 20px;
+            color: var(--text-dim);
+            font-size: 1.2rem;
+        }
+
+        .no-results i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            color: var(--card-border);
+        }
+
+        /* تأثيرات للاعبين الأوائل */
+        .player:nth-child(1) .rank {
+            background: linear-gradient(135deg, #ffd700, #ffb300);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+        }
+
+        .player:nth-child(2) .rank {
+            background: linear-gradient(135deg, #c0c0c0, #a0a0a0);
+            box-shadow: 0 0 15px rgba(192, 192, 192, 0.4);
+        }
+
+        .player:nth-child(3) .rank {
+            background: linear-gradient(135deg, #cd7f32, #b06c28);
+            box-shadow: 0 0 15px rgba(205, 127, 50, 0.4);
+        }
+
+        /* تحسينات للجوال */
+        @media (max-width: 768px) {
+            #players {
+                grid-template-columns: 1fr;
+            }
+            
+            .search-box {
+                min-width: 100%;
+            }
+            
+            .stats-bar {
+                justify-content: center;
+            }
+            
+            header h1 {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1><i class="fas fa-crown"></i> Arabic Test - Minecraft Tier Test</h1>
+    <p class="subtitle">لوحة بيانات اللاعبين المتقدمين مع عرض معلومات الـ IP</p>
+</header>
+
+<div class="container">
+    
+    <div class="stats-bar">
+        <div class="stat-item">
+            <div class="stat-value" id="total-players">25</div>
+            <div class="stat-label">اللاعبين الإجماليين</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-value" id="online-players">18</div>
+            <div class="stat-label">لاعبين متصلين</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-value" id="avg-points">87.5</div>
+            <div class="stat-label">متوسط النقاط</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-value" id="top-tier">HT1</div>
+            <div class="stat-label">أعلى تير</div>
+        </div>
+    </div>
+    
+    <div class="tabs">
+        <button class="active" data-mode="all">
+            <i class="fas fa-globe"></i> الكل
+        </button>
+        <button data-mode="crystal">
+            <i class="fas fa-gem"></i> Crystal
+        </button>
+        <button data-mode="sword">
+            <i class="fas fa-sword"></i> Sword
+        </button>
+        <button data-mode="axe">
+            <i class="fas fa-hatchet"></i> Axe
+        </button>
+        <button data-mode="online">
+            <i class="fas fa-wifi"></i> متصل الآن
+        </button>
+    </div>
+    
+    <div class="controls">
+        <div class="search-box">
+            <input class="search" id="search" placeholder="ابحث عن لاعب بالاسم أو الـ IP...">
+            <i class="fas fa-search"></i>
+        </div>
+        <button class="filter-btn" id="sort-btn">
+            <i class="fas fa-sort-amount-down"></i> ترتيب حسب النقاط
+        </button>
+    </div>
+    
+    <div id="players-container">
+        <!-- سيتم إضافة اللاعبين ديناميكيًا بواسطة JavaScript -->
+    </div>
+</div>
+
+<footer>
+    <p>© 2026 Arabic Test Server – جميع الحقوق محفوظة</p>
+    <div class="footer-links">
+        <a href="#"><i class="fas fa-home"></i> الرئيسية</a>
+        <a href="#"><i class="fas fa-question-circle"></i> المساعدة</a>
+        <a href="#"><i class="fas fa-user-shield"></i> الخصوصية</a>
+        <a href="#"><i class="fas fa-envelope"></i> اتصل بنا</a>
+    </div>
+</footer>
+
+<script>
+    // بيانات اللاعبين مع إضافة IP افتراضي
+    const playersData = [
+        {
+            id: 1,
+            name: "360Mall",
+            rank: 1,
+            uuid: "069a79f444e94726a5befca90e38aaf5",
+            mode: "crystal",
+            role: "Combat Ace – Crystal PvP",
+            points: 130,
+            tier: "HT1",
+            ip: "mc.arabictest.com:25565",
+            online: true,
+            tiers: [
+                {label: "HT1", active: true},
+                {label: "HT4", active: true},
+                {label: "HT5", active: true},
+                {label: "HT3", active: true},
+                {label: "LT1", active: false},
+                {label: "LT4", active: false}
+            ]
+        },
+        {
+            id: 2,
+            name: "circls",
+            rank: 2,
+            uuid: "8667ba71b85a4004af54457a9734eed7",
+            mode: "crystal",
+            role: "Combat Ace – Crystal PvP",
+            points: 100,
+            tier: "HT2",
+            ip: "mc.arabictest.com:25565",
+            online: true,
+            tiers: [
+                {label: "HT1", active: true},
+                {label: "HT4", active: true},
+                {label: "HT5", active: true},
+                {label: "HT3", active: true},
+                {label: "LT1", active: false},
+                {label: "LT4", active: false}
+            ]
+        },
+        {
+            id: 3,
+            name: "NovaRix",
+            rank: 3,
+            uuid: "853c80ef3c3749fdaa49938b674adae6",
+            mode: "sword",
+            role: "Combat Specialist – Sword PvP",
+            points: 94,
+            tier: "HT3",
+            ip: "play.novarix.net:25565",
+            online: true,
+            tiers: [
+                {label: "HT1", active: true},
+                {label: "HT4", active: true},
+                {label: "HT5", active: true},
+                {label: "HT3", active: true},
+                {label: "LT1", active: false},
+                {label: "LT4", active: false}
+            ]
+        },
+        {
+            id: 4,
+            name: "ShadowNinja",
+            rank: 4,
+            uuid: "f84c6afa4e1540509b9c2c5a8e5e6d7f",
+            mode: "axe",
+            role: "Axe Master – Axe PvP",
+            points: 88,
+            tier: "HT4",
+            ip: "mc.arabictest.com:25565",
+            online: false,
+            tiers: [
+                {label: "HT1", active: true},
+                {label: "HT4", active: true},
+                {label: "HT5", active: false},
+                {label: "HT3", active: true},
+                {label: "LT1", active: true},
+                {label: "LT4", active: false}
+            ]
+        },
+        {
+            id: 5,
+            name: "BedrockKing",
+            rank: 5,
+            uuid: "a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6",
+            mode: "crystal",
+            role: "Crystal Expert – Bedrock PvP",
+            points: 85,
+            tier: "HT5",
+            ip: "play.bedrockking.com:25565",
+            online: true,
+            tiers: [
+                {label: "HT1", active: true},
+                {label: "HT4", active: false},
+                {label: "HT5", active: true},
+                {label: "HT3", active: true},
+                {label: "LT1", active: true},
+                {label: "LT4", active: false}
+            ]
+        }
+    ];
+
+    // إضافة 5 لاعبين إضافيين لمحاكاة البيانات
+    for (let i = 6; i <= 15; i++) {
+        const modes = ["crystal", "sword", "axe"];
+        const mode = modes[Math.floor(Math.random() * modes.length)];
+        const tiers = ["HT1", "HT2", "HT3", "HT4", "HT5", "LT1", "LT2", "LT3", "LT4"];
+        const tier = tiers[Math.floor(Math.random() * 5)];
+        
+        playersData.push({
+            id: i,
+            name: `Player${i}`,
+            rank: i,
+            uuid: `uuid-${i}-${Math.random().toString(36).substr(2, 9)}`,
+            mode: mode,
+            role: `${mode === "crystal" ? "Crystal Fighter" : mode === "sword" ? "Sword Warrior" : "Axe Specialist"} – ${mode} PvP`,
+            points: 70 + Math.floor(Math.random() * 30),
+            tier: tier,
+            ip: `mc${Math.floor(Math.random() * 5) + 1}.arabictest.com:25565`,
+            online: Math.random() > 0.3,
+            tiers: [
+         <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+  </header>
+
+  <!-- القسم الرئيسي -->
+  <main>
+    <!-- قسم المقدمة -->
+    <section id="home" class="hero-section">
+      <div class="hero-container">
+        <div class="hero-content">
+          <div class="intro-text">
+            <h2 id="greeting" class="greeting">مرحباً، اسمي هو</h2>
+            <h1 id="name" class="name">البراء</h1>
+            <div class="typing-container">
+              <span id="description" class="description"></span>
+              <span class="cursor">|</span>
+            </div>
+            <div class="hero-buttons">
+              <a href="#projects" class="btn btn-primary">استعرض مشاريعي</a>
+              <a href="#contact" class="btn btn-secondary">تواصل معي</a>
+            </div>
+          </div>
+        </div>
+        <div class="hero-image">
+          <img src="Bexlo.png" alt="شخصية بكسلو" class="character" />
+          <div class="floating-elements">
+            <div class="floating-element el-1">🎮</div>
+            <div class="floating-element el-2">💻</div>
+            <div class="floating-element el-3">🚀</div>
+          </div>
+        </div>
+      </div>
+      <div class="scroll-indicator">
+        <span>مرر للأسفل</span>
+        <div class="arrow"></div>
+      </div>
+    </section>
+
+    <!-- قسم الألعاب -->
+    <section id="games" class="section games-section">
+      <div class="container">
+        <h2 id="games-title" class="section-title">ألعابي</h2>
+        <div class="games-grid">
+          <div class="game-card">
+            <a href="https://baraaq2010.itch.io/lincker-fighter" target="_blank" class="game-link">
+              <div class="game-image">
+                <img src="lol.png" alt="لعبة لينكر فايتر" />
+                <div class="game-overlay">
+                  <span class="play-text">تشغيل اللعبة</span>
+                </div>
+              </div>
+              <div class="game-info">
+                <h3 class="game-title">لينكر فايتر</h3>
+                <p class="game-desc">أول لعبة قمت بتطويرها</p>
+              </div>
+            </a>
+          </div>
+          <!-- يمكن إضافة المزيد من الألعاب هنا -->
+          <div class="game-card coming-soon">
+            <div class="game-image">
+              <img src="placeholder.jpg" alt="لعبة قريباً" />
+              <div class="coming-soon-overlay">
+                <span>قريباً</span>
+              </div>
+            </div>
+            <div class="game-info">
+              <h3 class="game-title">مشروع جديد</h3>
+              <p class="game-desc">قيد التطوير</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- قسم المهارات -->
+    <section id="skills" class="section skills-section">
+      <div class="container">
+        <h2 id="skills-title" class="section-title">اللغات والتقنيات</h2>
+        <div class="skills-grid">
+          <div class="skill-item">
+            <div class="skill-icon">
+              <img src="R.png" alt="HTML" />
+            </div>
+            <h3 class="skill-name">HTML</h3>
+            <div class="skill-bar">
+              <div class="skill-progress" data-level="90"></div>
+            </div>
+          </div>
+          <div class="skill-item">
+            <div class="skill-icon">
+              <img src="N.jpg" alt="CSS" />
+            </div>
+            <h3 class="skill-name">CSS</h3>
+            <div class="skill-bar">
+              <div class="skill-progress" data-level="85"></div>
+            </div>
+          </div>
+          <div class="skill-item">
+            <div class="skill-icon">
+              <img src="J.webp" alt="JavaScript" />
+            </div>
+            <h3 class="skill-name">JavaScript</h3>
+            <div class="skill-bar">
+              <div class="skill-progress" data-level="80"></div>
+            </div>
+          </div>
+          <div class="skill-item">
+            <div class="skill-icon">
+              <img src="L.webp" alt="تقنيات أخرى" />
+            </div>
+            <h3 class="skill-name">تقنيات أخرى</h3>
+            <div class="skill-bar">
+              <div class="skill-progress" data-level="75"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- قسم المشاريع المدرسية -->
+    <section id="projects" class="section projects-section">
+      <div class="container">
+        <h2 id="projects-title" class="section-title">مشاريعي المدرسية</h2>
+        <div class="projects-grid">
+          <div class="project-card">
+            <a href="مشروع عن البحر.html" class="project-link">
+              <div class="project-image">
+                <img src="lol2.png" alt="مشروع عن البحر" />
+              </div>
+              <div class="project-info">
+                <h3 class="project-title">مشروع عن البحر</h3>
+                <p class="project-desc">مشروع مدرسي يتناول موضوع البيئة البحرية</p>
+              </div>
+            </a>
+          </div>
+          <!-- يمكن إضافة المزيد من المشاريع هنا -->
+        </div>
+      </div>
+    </section>
+
+    <!-- قسم الشهادات والسيرة الذاتية -->
+    <section class="section certificates-section">
+      <div class="container">
+        <div class="certificates-grid">
+          <div class="certificate-card">
+            <h2 id="certificates-title" class="section-title">شهاداتي</h2>
+            <div class="coming-soon-box">
+              <div class="soon-icon">📜</div>
+              <h3>قريباً</h3>
+              <p>سيتم إضافة الشهادات قريباً</p>
+            </div>
+          </div>
+          <div class="certificate-card">
+            <h2 id="cv-title" class="section-title">السيرة الذاتية</h2>
+            <div class="coming-soon-box">
+              <div class="soon-icon">📄</div>
+              <h3>قريباً</h3>
+              <p>سيتم إضافة السيرة الذاتية قريباً</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- قسم الأشياء المفضلة -->
+    <section class="section favorites-section">
+      <div class="container">
+        <h2 id="favorites-title" class="section-title">أشياءي المفضلة</h2>
+        <div class="favorites-grid">
+          <div class="favorite-item">
+            <h3 id="color-title">اللون المفضل</h3>
+            <div class="color-display">
+              <div class="color-box red"></div>
+              <span>الأحمر</span>
+            </div>
+          </div>
+          <div class="favorite-item">
+            <h3 id="game-title">اللعبة المفضلة</h3>
+            <div class="game-display">
+              <img src="athor.png" alt="ماين كرافت" />
+              <span>ماين كرافت</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- قسم التواصل -->
+    <section id="contact" class="section contact-section">
+      <div class="container">
+        <h2 class="section-title">تواصل معي</h2>
+        <div class="contact-content">
+          <div class="contact-info">
+            <p>هل تريد التعاون في مشروع أو لديك استفسار؟</p>
+            <p>لا تتردد في التواصل معي!</p>
+          </div>
+          <div class="social-links">
+            <a href="#" class="social-link">📧 البريد الإلكتروني</a>
+            <a href="#" class="social-link">🐦 تويتر</a>
+            <a href="#" class="social-link">💼 لينكد إن</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- تذييل الصفحة -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-text">
+          <p>☁️ ---------- النهاية ---------- ☁️</p>
+          <p>© 2023 البراء. جميع الحقوق محفوظة.</p>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+
+</html>
